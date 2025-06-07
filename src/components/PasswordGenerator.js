@@ -19,15 +19,14 @@ function PasswordGenerator() {
     return Math.floor(Math.random() * limit)
   }
 
-  const passwordCreator = (characterList) => {
+  const passwordCreator = useCallback((characterList) => {
     let password = ""
-    let characterListLength = characterList.length
     for (let i = 0; i < passwordLength; i++) {
-      const characterIndex = getRandomIndex(characterListLength)
+      const characterIndex = getRandomIndex(characterList.length)
       password += characterList.charAt(characterIndex)
     }
     return password
-  }
+  }, [passwordLength])
 
   const notify = (message, hasError = false, info = false) => {
     if (hasError) {
@@ -62,8 +61,15 @@ function PasswordGenerator() {
     if (containsNumber) characterList += numberSet
     if (containsSymbols) characterList += symbolSet
 
-    setPassword(passwordCreator(characterList))
-  }, [containsLowerCase, containsUpperCase, containsNumber, containsSymbols, passwordLength])
+    const newPassword = passwordCreator(characterList)
+    setPassword(newPassword)
+  }, [
+    containsLowerCase,
+    containsUpperCase,
+    containsNumber,
+    containsSymbols,
+    passwordCreator,
+  ])
 
   useEffect(() => {
     handleGeneratorPassword()
@@ -138,7 +144,10 @@ function PasswordGenerator() {
           />
         </div>
 
-        <button onClick={handleGeneratorPassword} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">
+        <button
+          onClick={handleGeneratorPassword}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2"
+        >
           Generate Password
         </button>
       </div>
